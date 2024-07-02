@@ -36,4 +36,12 @@ class DatabaseService {
   void addTodo(Todo todo) {
     _todosRef.add(todo);
   }
+
+  void updateTodo(String todoId, Todo todo) {
+    _todosRef.doc(todoId).update(todo.toJson());
+  }
+
+  void deleteTodo(String todoId) {
+    _todosRef.doc(todoId).delete();
+  }
 }
