@@ -13,13 +13,29 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final TextEditingController _textEditingController = TextEditingController();
   final DatabaseService _databaseService = DatabaseService();
+
+  @override
+  void dispose() {
+    _textEditingController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: _appBar(),
       body: _builUi(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _displayTextInputDialog,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+      ),
     );
   }
 
@@ -95,5 +111,37 @@ class _HomePageState extends State<HomePage> {
         },
       ),
     );
+  }
+
+  void _displayTextInputDialog() async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Add a todo"),
+            content: TextField(
+              controller: _textEditingController,
+              decoration: const InputDecoration(hintText: "Todo..."),
+            ),
+            actions: [
+              MaterialButton(
+                color: Theme.of(context).colorScheme.primary,
+                textColor: Colors.white,
+                child: const Text("Ok"),
+                onPressed: () {
+                  Todo todo = Todo(
+                    task: _textEditingController.text,
+                    isDone: false,
+                    createdOn: Timestamp.now(),
+                    updatedOn: Timestamp.now(),
+                  );
+                  _databaseService.addTodo(todo);
+                  Navigator.pop(context);
+                  _textEditingController.clear();
+                },
+              ),
+            ],
+          );
+        });
   }
 }
